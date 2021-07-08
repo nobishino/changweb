@@ -10,5 +10,9 @@ func index(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-	http.ListenAndServe("", nil)
+	server := http.Server{
+		Addr:    "127.0.0.1:8080",
+		Handler: nil,
+	}
+	server.ListenAndServeTLS("cert.pem", "key.pem")
 }
