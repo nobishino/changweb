@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
 type MyHandler struct{}
 
 func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	index(w, r)
+	fmt.Fprintf(w, "Hello, World")
 }
 
 func index(writer http.ResponseWriter, request *http.Request) {
@@ -16,9 +17,13 @@ func index(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
+	handler := MyHandler{}
 	server := http.Server{
 		Addr:    "127.0.0.1:8080",
-		Handler: new(MyHandler),
+		Handler: &handler,
 	}
-	server.ListenAndServeTLS("cert.pem", "key.pem")
+	if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
+		log.Fatal(err)
+	}
+	// server.ListenAndServe()
 }
