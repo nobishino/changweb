@@ -4,26 +4,33 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
-type MyHandler struct{}
+type HelloHandler struct{}
 
-func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World")
+func (*HelloHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "Hello")
 }
 
-func index(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(writer, "Hello, World, %s!", request.URL.Path[1:])
+type WorldHandler struct{}
+
+func (*WorldHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "World")
 }
 
 func main() {
-	handler := MyHandler{}
 	server := http.Server{
-		Addr:    "127.0.0.1:8080",
-		Handler: &handler,
+		Addr: "127.0.0.1:8080",
+		// 何も書かないとDefaultMuxが使われる
 	}
-	if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
-		log.Fatal(err)
+	http.Handle("/hello", new(HelloHandler))
+	http.Handle("/world", new(WorldHandler))
+	// if err := server.ListenAndServeTLS("cert.pem", "key.pem"); err != nil {
+	// 	log.Fatal(err)
+	// }
+	if err := server.ListenAndServe(); err != nil {
+		log.Println(err)
+		os.Exit(1)
 	}
-	// server.ListenAndServe()
 }
