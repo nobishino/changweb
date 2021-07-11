@@ -32,9 +32,7 @@ func body(writer http.ResponseWriter, request *http.Request) {
 }
 
 func process(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(1024)
-	fileHeader := r.MultipartForm.File["uploaded"][0]
-	f, err := fileHeader.Open()
+	f, _, err := r.FormFile("uploaded")
 	if err != nil {
 		fmt.Fprintln(w, err)
 		return
