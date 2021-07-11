@@ -31,6 +31,11 @@ func body(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func process(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	fmt.Fprintln(w, r.Form)
+}
+
 func main() {
 
 	server := http.Server{
@@ -39,6 +44,7 @@ func main() {
 
 	http.HandleFunc("/", hello)
 	http.HandleFunc("/body", body)
+	http.HandleFunc("/process", process)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
