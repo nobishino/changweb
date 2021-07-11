@@ -41,6 +41,17 @@ func process(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, f)
 }
 
+func writeExample(w http.ResponseWriter, r *http.Request) {
+	msg := `<html>
+	<head><title>Go Web Programming</title></head>
+	<body><h1>Hello, Go Web!</h1></body>
+</html>`
+	if _, err := w.Write([]byte(msg)); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
 func main() {
 
 	server := http.Server{
@@ -50,6 +61,7 @@ func main() {
 	http.HandleFunc("/", hello)
 	http.HandleFunc("/body", body)
 	http.HandleFunc("/process", process)
+	http.HandleFunc("/write", writeExample)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
