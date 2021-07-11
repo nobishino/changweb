@@ -52,16 +52,27 @@ func writeExample(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func writeHeaderExample(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintln(w, "no service here")
+}
+
+func headerExample(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Location", "http://google.com")
+	w.WriteHeader(http.StatusFound)
+}
+
 func main() {
 
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
 
-	http.HandleFunc("/", hello)
+	http.HandleFunc("/", writeHeaderExample)
 	http.HandleFunc("/body", body)
 	http.HandleFunc("/process", process)
 	http.HandleFunc("/write", writeExample)
+	http.HandleFunc("/google", headerExample)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
