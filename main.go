@@ -106,7 +106,13 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCookie(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, req.Header["Cookie"])
+	c, err := req.Cookie("2nd_cookie")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintln(w, c)
+	fmt.Fprintln(w, req.Cookies())
 }
 
 func main() {
