@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -62,6 +63,32 @@ func headerExample(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusFound)
 }
 
+type Post struct {
+	User    string
+	Threads []string
+}
+
+func jsonExample(w http.ResponseWriter, r *http.Request) {
+	post := Post{
+		User: "user",
+		Threads: []string{
+			"red",
+			"blue",
+		},
+	}
+	buf, err := json.Marshal(post)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "failed to marshal post json")
+		return
+	}
+
+	if _, err := w.Write(buf); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "failed to write response")
+	}
+}
+
 func main() {
 
 	server := http.Server{
@@ -73,6 +100,7 @@ func main() {
 	http.HandleFunc("/process", process)
 	http.HandleFunc("/write", writeExample)
 	http.HandleFunc("/google", headerExample)
+	http.HandleFunc("/json", jsonExample)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
