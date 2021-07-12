@@ -105,6 +105,10 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("x-test", "test")
 }
 
+func getCookie(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(w, req.Header["Cookie"])
+}
+
 func main() {
 
 	server := http.Server{
@@ -118,6 +122,7 @@ func main() {
 	http.HandleFunc("/google", headerExample)
 	http.HandleFunc("/json", jsonExample)
 	http.HandleFunc("/cookie", setCookie)
+	http.HandleFunc("/get_cookie", getCookie)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
