@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 func hello(writer http.ResponseWriter, request *http.Request) {
@@ -115,6 +117,35 @@ func getCookie(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, req.Cookies())
 }
 
+func setMessage(w http.ResponseWriter, req *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "flash",
+		Value:    base64.URLEncoding.EncodeToString([]byte("Hello Message")),
+		HttpOnly: true,
+	})
+	fmt.Fprintln(w, "Set Message")
+}
+
+func showMessage(w http.ResponseWriter, req *http.Request) {
+	c, err := req.Cookie("flash")
+	if err != nil {
+		fmt.Fprintln(w, "No Message Is Set")
+	} else {
+		reset := http.Cookie{
+			Name:    "flash",
+			MaxAge:  -1,
+			Expires: time.Time{},
+		}
+		http.SetCookie(w, &reset)
+		msg, err := base64.URLEncoding.DecodeString(c.Value)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, "failed to decode message")
+		}
+		fmt.Fprintln(w, string(msg))
+	}
+}
+
 func main() {
 
 	server := http.Server{
@@ -129,6 +160,8 @@ func main() {
 	http.HandleFunc("/json", jsonExample)
 	http.HandleFunc("/cookie", setCookie)
 	http.HandleFunc("/get_cookie", getCookie)
+	http.HandleFunc("/set", setMessage)
+	http.HandleFunc("/show", showMessage)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
