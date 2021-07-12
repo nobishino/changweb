@@ -89,6 +89,22 @@ func jsonExample(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func setCookie(w http.ResponseWriter, r *http.Request) {
+	c1 := http.Cookie{
+		Name:     "name",
+		Value:    "nobishii",
+		HttpOnly: true,
+	}
+	c2 := http.Cookie{
+		Name:     "2nd_cookie",
+		Value:    "nobishino",
+		HttpOnly: true,
+	}
+	w.Header().Set("Set-Cookie", c1.String())
+	w.Header().Add("Set-Cookie", c2.String())
+	w.Header().Set("x-test", "test")
+}
+
 func main() {
 
 	server := http.Server{
@@ -101,6 +117,7 @@ func main() {
 	http.HandleFunc("/write", writeExample)
 	http.HandleFunc("/google", headerExample)
 	http.HandleFunc("/json", jsonExample)
+	http.HandleFunc("/cookie", setCookie)
 
 	server.ListenAndServe()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
