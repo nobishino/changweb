@@ -100,8 +100,8 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 		Value:    "nobishino",
 		HttpOnly: true,
 	}
-	w.Header().Set("Set-Cookie", c1.String())
-	w.Header().Add("Set-Cookie", c2.String())
+	http.SetCookie(w, &c1)
+	http.SetCookie(w, &c2)
 	w.Header().Set("x-test", "test")
 }
 
