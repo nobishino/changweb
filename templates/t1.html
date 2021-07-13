@@ -8,7 +8,7 @@
         <div>ここはt1.html(インクルードの前)</div>
         <div>t.htmlでのドットのあたい[{{.}}]</div>
         <hr>
-        {{ template "t2.html"}}
+        {{ template "t2.html" . }}
         <hr>
         <div>ここはt1.html(インクルードの後)</div>
     </body>
