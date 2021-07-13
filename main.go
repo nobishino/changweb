@@ -1,13 +1,18 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"html/template"
 	"net/http"
 )
 
+//go:embed templates/teml.html
+var temp string
+
 func process(w http.ResponseWriter, req *http.Request) {
-	t, err := template.ParseFiles("./templates/teml.html")
+	t := template.New("tmpl.html")
+	t, err := t.Parse(temp)
 	if err != nil {
 		fmt.Fprintln(w, "Fail")
 		return
