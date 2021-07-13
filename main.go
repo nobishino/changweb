@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -11,13 +10,13 @@ import (
 var temp string
 
 func process(w http.ResponseWriter, req *http.Request) {
-	t := template.New("tmpl.html")
-	t, err := t.Parse(temp)
-	if err != nil {
-		fmt.Fprintln(w, "Fail")
-		return
-	}
-	t.Execute(w, "Hello, Template!")
+	t := template.Must(template.ParseFiles("./templates/t1.html", "./templates/t2.html"))
+	// if err != nil {
+	// 	fmt.Fprintln(w, "Fail", err)
+	// 	return
+	// }
+	// b := rand.Intn(10) > 5
+	t.Execute(w, "test-include-action")
 }
 
 func main() {

@@ -5,6 +5,23 @@
         <title>Go Web Programming</title>
     </head>
     <body>
-        {{ . }}
+        <!-- <h1>乱数</h1>
+        {{ if . }}
+        x > 5!
+        {{ else }}
+        x <= 5! -->
+        <!-- {{ end }} -->
+        <h1>Iterator</h1>
+        {{ range .}}
+        <li>{{ . }}</li>
+        {{else}}
+        NO content
+        {{ end}}
+        <h1>with</h1>
+        {{ with "hello" }}
+        {{.}}
+        {{else}}
+        {{.}}
+        {{end}}
     </body>
 </html>
