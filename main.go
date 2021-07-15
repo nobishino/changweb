@@ -33,7 +33,7 @@ func process(w http.ResponseWriter, req *http.Request) {
 
 func process2(w http.ResponseWriter, req *http.Request) {
 	t, _ := template.New("template.html").ParseFS(templates, "templates/template.html")
-	t.Execute(w, req.FormValue("comment"))
+	t.Execute(w, template.HTML(req.FormValue("comment")))
 }
 
 func form(w http.ResponseWriter, req *http.Request) {
