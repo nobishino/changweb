@@ -1,14 +1,15 @@
 package main
 
 import (
-	_ "embed"
+	"embed"
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
 )
 
-//go:embed templates/teml.html
-var temp string
+//go:embed templates/*
+var templates embed.FS
 
 func formatDate(t time.Time) string {
 	format := "20060102"
@@ -18,7 +19,12 @@ func formatDate(t time.Time) string {
 func process(w http.ResponseWriter, req *http.Request) {
 	funcMap := template.FuncMap{"fdate": formatDate}
 	t := template.New("time.html").Funcs(funcMap)
-	t, _ = t.ParseFiles("./templates/time.html")
+	t, err := t.ParseFS(templates, "templates/time.html")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "parse error:", err)
+		return
+	}
 	t.Execute(w, time.Now())
 }
 
