@@ -41,11 +41,22 @@ func form(w http.ResponseWriter, req *http.Request) {
 	t.Execute(w, nil)
 }
 
+func definedTemplate(w http.ResponseWriter, req *http.Request) {
+	t, err := template.ParseFS(templates, "templates/layout.html")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	t.ExecuteTemplate(w, "layout", "")
+}
+
 func main() {
 	static := http.FileServer(http.FS(static))
 	http.Handle("/", static)
 	http.HandleFunc("/process", process2)
 	http.HandleFunc("/form", form)
+	http.HandleFunc("/defined", definedTemplate)
 
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
