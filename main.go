@@ -4,19 +4,22 @@ import (
 	_ "embed"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 //go:embed templates/teml.html
 var temp string
 
+func formatDate(t time.Time) string {
+	format := "20060102"
+	return t.Format(format)
+}
+
 func process(w http.ResponseWriter, req *http.Request) {
-	t := template.Must(template.ParseFiles("./templates/t1.html", "./templates/t2.html"))
-	// if err != nil {
-	// 	fmt.Fprintln(w, "Fail", err)
-	// 	return
-	// }
-	// b := rand.Intn(10) > 5
-	t.Execute(w, "test-include-action")
+	funcMap := template.FuncMap{"fdate": formatDate}
+	t := template.New("time.html").Funcs(funcMap)
+	t, _ = t.ParseFiles("./templates/time.html")
+	t.Execute(w, time.Now())
 }
 
 func main() {
