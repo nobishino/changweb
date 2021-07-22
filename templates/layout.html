@@ -3,7 +3,9 @@
 <html>
 
 <body>
-    {{ template "content" }}
+    {{ block "content" .}}
+    Default Content!
+    {{ end }}
 </body>
 
 </html>

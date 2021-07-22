@@ -20,7 +20,13 @@ func formatDate(t time.Time) string {
 }
 
 func process(w http.ResponseWriter, req *http.Request) {
-	t, err := template.ParseFS(templates, "templates/layout.html", "templates/content.html")
+	var t *template.Template
+	var err error
+	if time.Now().Unix()%2 == 0 {
+		t, err = template.ParseFS(templates, "templates/layout.html", "templates/content.html")
+	} else {
+		t, err = template.ParseFS(templates, "templates/layout.html")
+	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
