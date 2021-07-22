@@ -20,44 +20,20 @@ func formatDate(t time.Time) string {
 }
 
 func process(w http.ResponseWriter, req *http.Request) {
-	funcMap := template.FuncMap{"fdate": formatDate}
-	t := template.New("time.html").Funcs(funcMap)
-	t, err := t.ParseFS(templates, "templates/time.html")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "parse error:", err)
-		return
-	}
-	t.Execute(w, time.Now())
-}
-
-func process2(w http.ResponseWriter, req *http.Request) {
-	t, _ := template.New("template.html").ParseFS(templates, "templates/template.html")
-	t.Execute(w, template.HTML(req.FormValue("comment")))
-}
-
-func form(w http.ResponseWriter, req *http.Request) {
-	t, _ := template.New("form.html").ParseFS(templates, "templates/form.html")
-	t.Execute(w, nil)
-}
-
-func definedTemplate(w http.ResponseWriter, req *http.Request) {
-	t, err := template.ParseFS(templates, "templates/layout.html")
+	t, err := template.ParseFS(templates, "templates/layout.html", "templates/content.html")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
 		return
 	}
+
 	t.ExecuteTemplate(w, "layout", "")
 }
 
 func main() {
 	static := http.FileServer(http.FS(static))
 	http.Handle("/", static)
-	http.HandleFunc("/process", process2)
-	http.HandleFunc("/form", form)
-	http.HandleFunc("/defined", definedTemplate)
-
+	http.HandleFunc("/process", process)
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
