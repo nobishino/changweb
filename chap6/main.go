@@ -1,41 +1,51 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
-	"io"
 	"log"
 	"os"
 )
 
+type Post struct {
+	Id      int
+	Content string
+	Author  string
+}
+
 func main() {
-	data := []byte("Hello, World!\n")
+	p := Post{Id: 0, Content: "hello", Author: "nobishii"}
+	store(p, "test")
+	var q Post
+	load(&q, "test")
+	fmt.Println(q)
+}
 
-	if err := os.WriteFile("data1", data, 0644); err != nil {
-		log.Fatal(err)
+func store(data interface{}, filename string) {
+	buffer := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buffer)
+	if err := encoder.Encode(data); err != nil {
+		log.Print(err)
+		return
 	}
+	if err := os.WriteFile(filename, buffer.Bytes(), 0644); err != nil {
+		log.Print(err)
+		return
+	}
+}
 
-	read1, err := os.ReadFile("./data1")
+func load(data interface{}, filename string) {
+	f, err := os.Open(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return
 	}
-	fmt.Println(string(read1))
+	defer f.Close()
 
-	f1, err := os.Create("data2")
-	if err != nil {
-		log.Fatal(err)
+	dec := gob.NewDecoder(f)
+	if err := dec.Decode(data); err != nil {
+		log.Print(err)
+		return
 	}
-	defer f1.Close()
-	if _, err := f1.Write(data); err != nil {
-		log.Fatal(err)
-	}
-	f1.Sync()
-
-	f2, err := os.Open("data2")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f2.Close()
-
-	io.Copy(os.Stdout, f2)
-
 }
