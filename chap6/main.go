@@ -15,11 +15,35 @@ type Post struct {
 }
 
 func main() {
-	p := Post{Id: 0, Content: "hello", Author: "nobishii"}
-	store(p, "test")
-	var q Post
-	load(&q, "test")
-	fmt.Println(q)
+	post := Post{Content: "hello", Author: "nobishii"}
+
+	fmt.Println(post)
+	post.Create()
+	fmt.Println(post)
+
+	readPost, err := GetPost(post.Id)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(readPost)
+
+	readPost.Content = "HeyHeyHey"
+	readPost.Author = "nobiine"
+
+	if err := readPost.Update(); err != nil {
+		panic(err)
+	}
+
+	posts, err := Posts(10)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(posts)
+
+	if err := readPost.Delete(); err != nil {
+		panic(err)
+	}
+
 }
 
 func store(data interface{}, filename string) {
